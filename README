@@ -1,0 +1,90 @@
+----------------------------
+--- BiFragExtractor Manual ---
+----------------------------
+
+BiFragExtractor is a software for extracting parallel fragments from comparable sentences, described
+in this paper: Accurate Parallel Fragment Extraction from Quasi–Comparable Corpora using Alignment Model
+and Translation Lexicon, Chu+, IJCNLP2013
+
+To extract parallel fragments from comparable sentences, you need to do the following steps.
+Sample data is provided in ./data for understanding these steps.
+
+1. Extract translation lexicons from a word aligned parallel corpus (Word alignment is done by GIZA++
+   for our sample data, see [http://www.statmt.org/moses/?n=FactoredTraining.AlignWords] for details)
+1.1 IBM Model 1 lexicon [Brown+ 1993]
+    $ perl ./script/IBMLex.pl -in_path ./data/parallel -out_path ./data/lex/IBM
+
+    Parameters for IBMLex.pl
+     -in_path   input directory of parallel data (use data.fr, data.en and aligned)
+     -out_path  output directory of IBM model 1 lexicon
+
+    Following 2 files of IBM Model 1 lexicon in two directions will be produced in ./data/lex/IBM:
+     IBM.e2f, IBM.f2e
+
+1.2 Log-Likelihood-Ratio (LLR) lexion [Munteanu+ 2006]
+    $ perl ./script/LLRLex.pl -in_path ./data/parallel -out_path ./data/lex/LLR
+
+    Parameters for LLRLex.pl
+     -in_path   input directory of parallel data (use data.fr, data.en and aligned)
+     -out_path  output directory of LLR lexicon
+
+    Following 4 files of LLR lexicons for positive and negative associations in two directions 
+    will be produced in ./data/lex/LLR:
+     LLR.e2f.neg, LLR.e2f.pos, LLR.f2e.neg, LLR.f2e.pos
+
+1.3 Sub-corpora sampling lexicon (sampLex) [Vulic+ 2012]
+    $ perl ./script/sampLex.pl -in_path ./data/parallel -out_path ./data/lex/sampLex/iters -iters 10
+    $ perl ./script/combLex.pl -in_path ./data/lex/sampLex/iters -out_path ./data/lex/sampLex -iters 10
+
+    Parameters for sampLex.pl
+     -in_path   directory of parallel data (use data.fr, data.en)
+     -out_path  output directory of sampLex for each iteration
+     -iters     iteration number (default: 10)
+
+    Parameters for combLex.pl
+     -in_path  	input directory of sampLex for each iteration
+     -out_path  output directory of sampLex
+     -iters     iteration number, and you should set the same number as for sampLex.pl (default: 10)
+
+    Following 2 files of sampLex in two directions will be produced in ./data/lex/sampLex:
+     sampLex.e2f, sampLex.f2e
+
+    # Note
+      - word alignment is not required from sampLex
+      - sampLex.pl is slow, it is better to parallelly execute it for large data
+
+2. Extract parallel fragments (We suppose that you already have comparable sentences with their word alignment results)
+2.1 Use the method of [Munteanu+ 2006]
+    $ perl ./script/fragment_munteanu.pl -llr_dir ./data/lex/LLR -len_limit 3 -smooth_num 5 -in_path ./data/comparable -out_path ./data/fragment/munteanu
+
+    Parameters for fragment_munteanu.pl
+     -llr_dir	 directory of LLR lexicon
+     -len_limit	 shortest fragment length limitation (default: 3)
+     -smooth_num surrounding number for the smoothing filter (default: 5)
+     -in_path  	 input directory of comparable data (use data.fr.ext, data.en.ext)
+     -out_path   output directory of extracted parallel fragments
+
+    Following 2 files of parallel fragments will be produced in ./data/fragment/munteanu:
+     data.en.frag, data.fr.frag
+
+    # Note: word alignment is not required for the method of [Munteanu+ 2006]
+
+2.2 Use our proposed method in [Chu+ IJCNLP2013]
+    $ perl ./script/fragment_proposed.pl -lex_type LLR -lex_dir ./data/lex/LLR -len_limit 3 -smooth_num 5 -in_path ./data/comparable -out_path ./data/fragment/proposed
+
+    Parameters for fragment_proposed.pl
+     -lex_type	 set lexicon type (IBM, LLR or sampLex) (default: LLR)
+     -lex_dir	 directory of translation lexicon, set it corresponding to -lex_type
+     -len_limit	 shortest fragment length limitation (default: 3)
+     -smooth_num surrounding number for the smoothing filter (default: 5)
+     -in_path  	 input directory of comparable data (use data.fr.ext, data.en.ext, aligned.ext)
+     -out_path   output directory of extracted parallel fragments
+
+    Following 2 files of parallel fragments will be produced in ./data/fragment/proposed:
+     data.en.frag.$lex_type, data.fr.frag.$lex_type
+
+    # Note: Our proposed method extracts parallel fragments from a word aligned comparable corpus
+
+----------------------------------------------------------------------------------------
+License: see ./LICENSE
+Contact: chu@nlp.ist.i.kyoto-u.ac.jp

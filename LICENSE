@@ -1,0 +1,25 @@
+BiFragExtractor is Copyright (C) 2013 Chenhui Chu
+Graduate School of Informatics, Kyoto University, Japan
+
+If you use BiFragExtractor, please cite the following paper.
+
+Chenhui Chu, Toshiaki Nakazawa and Sadao Kurohashi:
+Accurate Parallel Fragment Extraction from Quasi–Comparable Corpora using 
+Alignment Model and Translation Lexicon
+Proceedings of the 6th International Joint Conference on Natural Language Processing 
+(IJCNLP2013, short paper), pp.1144-1150, Nagoya, Japan, (2013.10).
+
+------------------------------------------------------------------------------------
+
+BiFragExtractor is a free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
+
+BiFragExtractor is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+----------------------------------------------------------------------------------------
+Contact: chu@nlp.ist.i.kyoto-u.ac.jp
